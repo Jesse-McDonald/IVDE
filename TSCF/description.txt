@@ -190,7 +190,6 @@ Inserts a smooth newline character
 
 
 Code can be placed at any time, if the code might contain a < or > be sure to escape it with \, as this is the only character escaped with \ you can used
-\ as normal in coding (ie '\'' is the character ', you dont have to do '\\'
-' to get it)
+\ as normal in coding (ie '\'' is the character ', you dont have to do '\\'' to get it)
 code is recomened to be placed withing <START>. <END> block
 Whitespace after the last keyword (except the first newline) are preserved as code.  As is any trailing whitespace.
