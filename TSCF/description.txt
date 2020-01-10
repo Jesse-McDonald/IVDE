@@ -188,6 +188,8 @@ This inserts a tab character, however the insertion is "smooth" and will cause t
 <NEWLINE>
 Inserts a smooth newline character
 
+<BACKSPACE (N)>
+Backspaces N characters, N defaults to 1.  Does so as if backspace key is held.  For packspace key mashed uses several BACKSPACE keywords.
 
 Code can be placed at any time, if the code might contain a < or > be sure to escape it with \, as this is the only character escaped with \ you can used
 \ as normal in coding (ie '\'' is the character ', you dont have to do '\\'' to get it)
