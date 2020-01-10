@@ -1,0 +1,116 @@
+The TSCF format is capable of simulating real time coding.  file is evaluated from top to bottom and time stamps must be in order.
+All operations following a time stamp are executed from top to bottom unless they are grouped as simltaneous.
+
+All keywords for the TSCF file are enclosed in <> so escape them with \ if used in code (looking at you c++)
+Keywords
+
+<TIME [[START TIME]] [[DURRATION]]>
+this is a time stamp, when a time stamp is execution waits untill start time.  Then all instructions are executed using the exact time of DURRATION
+Time formats for start time and durration can be HH:MM:SS.MS or ssss.ms, both hours and minutes are optional defaulting to 0.  any second or minute greater than 60 will be converted to the equivalent hours and minutes
+examples
+durration is optional, if not included the next time stamps start time will be used as the end time
+<TIME 1:30 30> 
+start at 1 minute 30 and last 30 seconds
+<TIME 90>
+start at 1 minute 30 and go to next stamp
+
+<TYPERATE [[SPEED]]>
+the rate to type text at.  Speed is in floating seconds per key stroke.  Overrides durration of <TIME> if shorter. 
+examples
+<TYPERATE .25>
+quarter second key stroke rate
+
+<LABLE [[name]] [[Line]] [[Character]] [[FLOAT]]>
+Places a lable of [[name]] on [[Line]] at [[character]] character is optional, if omitted lable is placed at start of line. 
+lable is placed BEFORE specified character, so the start of a line is character=0, and the end is character=len+1
+[[float]] is optional true or false that indecates if the lable is floating or not.  Default to true.  A floating lable will float with the line its attatched to if lines are inserted above
+same for characters to the right.  SO if you put in a floating lable on line 10 and then add 2 more lines at line 8, the lable will point to line 12.
+Non floating lables are absolute regardless of insertion before
+line and character can be sepperated by a : instead of a space
+Character can be START or END to indecate start or end of a line
+examppes:
+<LABLE bob 10 2>
+floating lable bob is on line 10 character 2
+
+Special Lables
+the lables EOF/eof and SOF/sof  are reserved for end of file and start of file
+
+<CURSOR[N] [[Line]] [[Character]]>
+or
+<CURSOR[N] [[LABLE]] ((character))>
+or 
+<CURSOR[N] [[start Line]] [[start Character]] - [[end Line]] [[end Character]]>
+Sets the N cursor to the line specified before character, you can also set the cursor to a lable
+if lable is used a character can also be used to over ride the lables character
+if N is omited cursor0 is used, 
+if a - is used 2 positions are expected one to start the selection and one to end it.  the area in between is hilighted
+a : can be used instead of a space between line and character
+Cursors are automaticaly floating
+example
+<CURSOR1 bob>
+cursor1 is now on lable BOB (10:2)
+<CURSOR 10:2>
+cursor0 is now set on 10:2
+<CURSOR bob-12:5>
+cursor0 is now selecting from BOB to 12:5
+
+<CLEAR [[CURSOR[N]]]>
+or
+<CLEAR ALL>
+clears the set position of a cursor, cursors that have a set position will be automaticaly used, so clear extra cursors when finished wiht them
+specifing all instead of a specific cursor will clear all cursors
+example
+<CLEAR cursor1>
+
+<COLOR [[CURSOR][N]] [[RED]] [[GREEN]] [[BLUE]] [[ALPHA]]>
+or
+<COLOR [[CURSOR[N]]] #AARRGGBB>
+or
+<COLOR [[CURSOR[N]]] 0xAARRGGBB>
+sets the color of a cursor accepts ARGB colors in 3 ways either as 3-4 numbers (A is optional) or as a hex number (again A is opional)
+Hexnumbers can be specified in 0x notation of # notation
+acceptable color layouts are AARRGGBB ARGB RGB or RRGGBB anything else in hex notaton will have enpredictable results
+if A is ommited, the A of the default color will be used.
+To set the default color use DEFAULT instead of cursor
+examples
+<COLOR DEFAULT 255 0 0 50>
+sets default color to transparrent red
+<COLOR cursor1 #0000FF>
+sets cursor 1 to transparrent blue
+
+<START> or <CODE>
+This key word is used to specify the start of a code block.  This flag is optional, but code reading reproduces all newlines even if blank
+with <START> the code reading starts on the next line and will not include any blank lines before start
+start is implied by the last keyword before code
+
+<END> or </CODE>
+similar to start use to end a code block and not include any extra newlines
+end is implied by the first keyword following code
+
+<AT CURSOR[N]> 
+Specify that the following code should only be produced at a specific cursor, <END> or </AT> must be used to return to all cursor mode
+Usefull for simulating ctrl+c ctrl+p
+
+<SYNC>
+Any key words or code following a SYNC will happen at the same time, selections will be moved together, and code blocks will be typed at the same time
+
+<DESYNC> or </SYNC>
+indecates the end of sync block, allowing sync blocks to be nested <TIME> works as a master desync and will force a return to regular operation
+
+<ORDER>
+indecates keywords and code inside should be in order, as this is the default state, it should only be used within sync blocks when you want
+some things to happen at the same time, but others to have a specific order
+
+<DEORDER> or </ORDER>
+indecates the end of an order block
+
+<PASTE>
+Code following this keyword appears all at once as if pasted from the clip board
+
+<TYPE> or </PASTE>
+code following this keyword appears to be typed.  This is the default state, use for returning to normal from <PASTE>
+
+Code can be placed at any time, if the code might contain a < or > be sure to escape it with \, as this is the only character escaped with \ you can used
+\ as normal in coding (ie '\'' is the character ', you dont have to do '\\'
+' to get it)
+code is recomened to be placed withing <START>. <END> block
