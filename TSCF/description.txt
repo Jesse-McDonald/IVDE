@@ -121,6 +121,9 @@ Code following this keyword appears all at once as if pasted from the clip board
 <TYPE> or </PASTE>
 code following this keyword appears to be typed.  This is the default state, use for returning to normal from <PASTE>
 
+<LANGUAGE [[language]]>
+Specifies the language being used, only needed once per file, if used multiple times behavior is interpreter specific
+
 Code can be placed at any time, if the code might contain a < or > be sure to escape it with \, as this is the only character escaped with \ you can used
 \ as normal in coding (ie '\'' is the character ', you dont have to do '\\'
 ' to get it)
