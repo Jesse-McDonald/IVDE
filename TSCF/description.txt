@@ -39,6 +39,7 @@ floating lable bob is on line 10 character 2
 Special Lables
 the lables EOF/eof and SOF/sof are reserved for end of file and start of file
 all variations of CURSOR# are also reserved, attempting to set a cursor as a lable has the same effect as setting a cursor using <CURSOR> (<LABLE CURSOR1 10 2> is synonomous with <CURSOR1 10 2>)  any float argument will be ignored if you do this
+all variations of CLEAR are reserved and can ot be made lables
 
 <CURSOR[N] [[Line]] [[Character]]>
 or
@@ -117,7 +118,8 @@ some things to happen at the same time, but others to have a specific order
 indecates the end of an order block
 
 <PASTE>
-Code following this keyword appears all at once as if pasted from the clip board
+Code following this keyword appears all at once as if pasted from the clip board with no delay between letters, lines, or keywords
+surpresses <TAB> and <NEWLINE> animation (NOTE: No clipboard is provided, and you cant actually copy previous lines of tesxt, you must manualy copy into the TSCF file the section you want coppied)
 
 <TYPE> or </PASTE>
 code following this keyword appears to be typed.  This is the default state, use for returning to normal from <PASTE>
@@ -125,7 +127,70 @@ code following this keyword appears to be typed.  This is the default state, use
 <LANGUAGE [[language]]>
 Specifies the language being used, only needed once per file, if used multiple times behavior is interpreter specific
 
+<SCROLL [LINE]>
+or
+<SCROLL [[LABLE]]>
+this tells the interpreter to scroll the window to the specified line or lable, the entire durration to the next time stamp will be used
+
+<SET {{TOP,BOTTOM}} [[LABLE]]>
+or 
+<SET {{TOP,BOTTOM}} [[LINE]]>
+sets the line that should be at the top or bottom (depending on arg1) of the display.  If both are set and there is not enought room, the last one set is ignored.  If there is more than enough room, padding is added.
+
+<SET RIGHT [[LINE]] [[CHARACTER]]>
+or
+<SET RIGHT [[LABLE]] ((CHARACTER))>
+sets the the right most character to be shown.  if room enough padding is added.
+
+<SET {{RIGHT,TOP,BOTTOM}} CLEAR>
+Clears exisisting ancors from side. if this causes padding to dissapate, the dissapation will be animated taking tell the next timestamp 
+
+<PAD [[LINE]] [[CHARACTER]]>
+or 
+<PAD [LABLE]>
+Indicates where pading should be put.  Ignored if not needed.  Padding is split evenly between all PAD blocks within a range  Line numbers are un effected.
+
+<PAD ((LINE)) CLEAR>
+Removes all padding markers from specified line, if no line specified, removes all padding markers.  Dissapation is animated takin to the next timestamp
+
+<COLLAPSE>
+this tells the interpreter to collapse the selected text.  Does not effect line numbers and the interpreter should "skip" the collapsed lines. if the selected text is multiple full lines the interpreter should leave the first line only followed by a collaps indecator (... or underline of some sort)
+If the selected text is part of a line or not full, then it should be collapsed to the first few letters followed by ... and then the last few letters
+Collapsing only occures in the view, not in the eval file
+
+<run [[TAB]]>
+queues the interpreter to run the runtime interpreter if avaliable.  TAB is provided as the start
+
+Tabs:
+There are times it is usefull to have multiple files open at once.  To do this we have tabs.  Tabs are fake files that each have their own cursors, lables, and code.  when a new tab is made a new eval is created for execution as well.  
+
+<CREATE [[TAB]]>
+Creates a new "file" tab.  Each tab tracks its own set of cursors and lables
+
+<OPEN [[TAB]]>
+opens a view into a tab
+
+<CLOSE [[TAB]]>
+closes an open tab view. 
+
+<FOCUS [[TAB]]>
+moves focus to a specific tab.  All operations will now target that tab.  IF the tab is not open then current tab is closed and target is opened
+
+<REMOVE [[TAB]]>
+Destroys a tab, all code in side is removed
+
+
+Code keywords: These keywords are designed to be used in the code section and are not an implicit <END>
+
+<TAB>
+This inserts a tab character, however the insertion is "smooth" and will cause text after it to slide rather than jump
+
+<NEWLINE>
+Inserts a smooth newline character
+
+
 Code can be placed at any time, if the code might contain a < or > be sure to escape it with \, as this is the only character escaped with \ you can used
 \ as normal in coding (ie '\'' is the character ', you dont have to do '\\'
 ' to get it)
 code is recomened to be placed withing <START>. <END> block
+Whitespace after the last keyword (except the first newline) are preserved as code.  As is any trailing whitespace.
