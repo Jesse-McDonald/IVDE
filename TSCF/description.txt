@@ -77,6 +77,7 @@ Hexnumbers can be specified in 0x notation of # notation
 acceptable color layouts are AARRGGBB ARGB RGB or RRGGBB anything else in hex notaton will have enpredictable results
 if A is ommited, the A of the default color will be used.
 To set the default color use DEFAULT instead of cursor
+selections will automaticaly be half as opaque as the cursor
 examples
 <COLOR DEFAULT 255 0 0 50>
 sets default color to transparrent red
