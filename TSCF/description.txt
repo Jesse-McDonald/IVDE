@@ -1,5 +1,5 @@
-The TSCF format is capable of simulating real time coding.  file is evaluated from top to bottom and time stamps must be in order.
-All operations following a time stamp are executed from top to bottom unless they are grouped as simltaneous.
+The TSCF (Time Stamped code file/format) format is capable of simulating real time coding.  file is evaluated from top to bottom and time stamps must be in order.  In generaly the file type is not white space sensetive, however any whitespace may be produced as code unless the code block keywords are used.  Code is typed exactly as shown.
+All operations following a time stamp are executed from top to bottom unless they are grouped as sinc.
 
 All keywords for the TSCF file are enclosed in <> so escape them with \ if used in code (looking at you c++)
 Keywords
@@ -20,7 +20,9 @@ examples
 <TYPERATE .25>
 quarter second key stroke rate
 
-<LABLE [[name]] [[Line]] [[Character]] [[FLOAT]]>
+<LABLE [[name]] [[Line]] [[Character]] [[FLOAT]]> 
+or 
+<LABLE [[name]] [[LABLE]] [[FLOAT]]>
 Places a lable of [[name]] on [[Line]] at [[character]] character is optional, if omitted lable is placed at start of line. 
 lable is placed BEFORE specified character, so the start of a line is character=0, and the end is character=len+1
 [[float]] is optional true or false that indecates if the lable is floating or not.  Default to true.  A floating lable will float with the line its attatched to if lines are inserted above
@@ -28,12 +30,15 @@ same for characters to the right.  SO if you put in a floating lable on line 10 
 Non floating lables are absolute regardless of insertion before
 line and character can be sepperated by a : instead of a space
 Character can be START or END to indecate start or end of a line
+Lables can be placed at other lables.
+All set cursors are implicetly lables
 examppes:
 <LABLE bob 10 2>
 floating lable bob is on line 10 character 2
 
 Special Lables
-the lables EOF/eof and SOF/sof  are reserved for end of file and start of file
+the lables EOF/eof and SOF/sof are reserved for end of file and start of file
+all variations of CURSOR# are also reserved, attempting to set a cursor as a lable has the same effect as setting a cursor using <CURSOR> (<LABLE CURSOR1 10 2> is synonomous with <CURSOR1 10 2>)  any float argument will be ignored if you do this
 
 <CURSOR[N] [[Line]] [[Character]]>
 or
@@ -90,6 +95,12 @@ end is implied by the first keyword following code
 <AT CURSOR[N]> 
 Specify that the following code should only be produced at a specific cursor, <END> or </AT> must be used to return to all cursor mode
 Usefull for simulating ctrl+c ctrl+p
+
+<EVAL>
+specifies that following code should be added to the eval file not the visuble file, use for setting interpreter settings like pauses and breakpoints and timestamps, use the eval file format for these commands
+
+</EVAL> 
+ends an eval block, you can also use <END>
 
 <SYNC>
 Any key words or code following a SYNC will happen at the same time, selections will be moved together, and code blocks will be typed at the same time
